@@ -1,14 +1,15 @@
 schema:
-  - graphql/schema.graphqls
+  - schema.graphql
 
 exec:
-  filename: generated/generated.go
-  package: generated
+  filename: graph/generated.go
+  package: graph
 
 model:
-  model:
-    User:
-      model: "live-tracking-server/modules/user/domain/entities.User"  
-  resolver:
-    UserResolver:
-      model: "live-tracking-server/modules/user/presentation/graphql/resolvers.UserResolver"
+  filename: graph/model/models_gen.go
+  package: model
+
+resolver:
+  layout: follow-schema
+  dir: graph
+  package: graph

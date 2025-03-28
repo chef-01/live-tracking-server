@@ -7,6 +7,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/chef-01/live-tracking-server/config"
+	"github.com/chef-01/live-tracking-server/graph"
 	"github.com/chef-01/live-tracking-server/modules/user/data/repo_impl"
 	"github.com/chef-01/live-tracking-server/modules/user/domain/usecase"
 	"github.com/chef-01/live-tracking-server/modules/user/presentation/controller"
@@ -36,8 +37,7 @@ func main() {
 	userResolver := resolvers.NewUserResolver(userController)
 
 	// Set up GraphQL Handler
-	srv := handler.NewDefaultServer(resolvers.NewExecutableSchema(resolvers.Config{Resolvers: userResolver}))
-
+	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: userResolver}))
 	// Setup Gin
 	router := gin.Default()
 
