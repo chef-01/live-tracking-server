@@ -4,14 +4,17 @@ import (
 	"log"
 	"os"
 
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/chef-01/live-tracking-server/config"
 	"github.com/chef-01/live-tracking-server/modules/user/data/repo_impl"
 	"github.com/chef-01/live-tracking-server/modules/user/domain/usecase"
 	"github.com/chef-01/live-tracking-server/modules/user/presentation/controller"
-	"github.com/joho/godotenv"
 	"github.com/gin-gonic/gin"
 
-	"github.com/chef-01/live-tracking-server/modules/user/presentation/resolvers"
+	"github.com/chef-01/live-tracking-server/modules/user/presentation/graphql/resolvers"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -32,12 +35,21 @@ func main() {
 	// Initialize resolvers
 	userResolver := resolvers.NewUserResolver(userController)
 
+	// Set up GraphQL Handler
+	srv := handler.NewDefaultServer(resolvers.NewExecutableSchema(resolvers.Config{Resolvers: userResolver}))
+
 	// Setup Gin
 	router := gin.Default()
 
-	// Set up GraphQL Handler
-	router.POST("/query", handler.NewDefaultServer(resolvers.NewExecutableSchema(resolvers.Config{Resolvers: userResolver})))
-	router.GET("/playground", playground.Handler("GraphQL Playground", "/query"))
+	// GraphQL query route
+	router.POST("/query", func(c *gin.Context) {
+		srv.ServeHTTP(c.Writer, c.Request)  // Correct type conversion for Gin
+	})
+
+	// GraphQL playground route
+	router.GET("/playground", func(c *gin.Context) {
+		playground.Handler("GraphQL Playground", "/query").ServeHTTP(c.Writer, c.Request) // Correct type conversion for Gin
+	})
 
 	// Start the server
 	port := os.Getenv("PORT")
