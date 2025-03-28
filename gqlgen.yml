@@ -1,0 +1,14 @@
+schema:
+  - graphql/schema.graphqls
+
+exec:
+  filename: generated/generated.go
+  package: generated
+
+model:
+  model:
+    User:
+      model: "live-tracking-server/modules/user/domain/entities.User"  
+  resolver:
+    UserResolver:
+      model: "live-tracking-server/modules/user/presentation/graphql/resolvers.UserResolver"
